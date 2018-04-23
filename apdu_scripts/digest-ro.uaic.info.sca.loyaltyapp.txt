@@ -1,0 +1,12 @@
+Digest for ro/uaic/info/sca/loyaltyapp/javacard/Debug.cap		[SHA-256: 97d67efaf08b5a2f99a001fbf9091aad6431772b57a32a8feb17d27b43ea1785]
+Digest for ro/uaic/info/sca/loyaltyapp/javacard/Header.cap		[SHA-256: 05ab34052b4d8d1ce3125b2ae769c694535fcabb05e4732a384dff35d3d7b976]
+Digest for ro/uaic/info/sca/loyaltyapp/javacard/Method.cap		[SHA-256: 279c578f6c5b38fd5f0df6f6fb9f096a3a3e5f7a6d0ad7cd360d1a977f7adf97]
+Digest for ro/uaic/info/sca/loyaltyapp/javacard/RefLocation.cap		[SHA-256: 349d146cdfffd77756d7736cfe5015afa751d02aaad2dd300d04859c6773992a]
+Digest for ro/uaic/info/sca/loyaltyapp/javacard/ConstantPool.cap		[SHA-256: d95d1f9cc608b1579d19b5d1fb7bd466e2096ca651e71d32a922d53c1d2170e8]
+Digest for ro/uaic/info/sca/loyaltyapp/javacard/Class.cap		[SHA-256: e2b28c67ccf6c53a7fd706d1528047cd03ceee957184a038e20efb16db199539]
+Digest for ro/uaic/info/sca/loyaltyapp/javacard/Applet.cap		[SHA-256: 6b7b285c917df45849a14c766e42b85c361118b5e6b49df8adf3ccbc96161eb4]
+Digest for ro/uaic/info/sca/loyaltyapp/javacard/StaticField.cap		[SHA-256: 95c3212ccd6c08d25adf6c74beeec9655f51d4c7b2c7227377c73173c4a0dd71]
+Digest for ro/uaic/info/sca/loyaltyapp/javacard/Descriptor.cap		[SHA-256: a5239fbc95007469edf59a7812f98facafa7e83c0de1c6758874c6f0b9eed6fb]
+Digest for ro/uaic/info/sca/loyaltyapp/javacard/Directory.cap		[SHA-256: 97411d057cde9009f66521199ef9af028ed89d83f0c5f99c504106cf90728550]
+Digest for ro/uaic/info/sca/loyaltyapp/javacard/Import.cap		[SHA-256: e58492b256b4af8d7f1860f18e57c5336e254a618c2518c987dcefb33db0a8d0]
+Verification completed with 0 warnings and 0 errors.

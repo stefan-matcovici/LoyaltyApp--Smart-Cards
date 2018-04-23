@@ -1,0 +1,10 @@
+// Applet Selection APDU Script
+//
+// Package:     ro.uaic.info.sca.loyaltyapp
+// Package AID: //aid/0606060606/01
+// Applet:      LoyaltyApp
+// Applet AID:  //aid/0606060606/02
+//
+
+// Select LoyaltyApp applet
+0x00 0xA4 0x04 0x00 0x06 0x06 0x06 0x06 0x06 0x06 0x02 0x7F;
