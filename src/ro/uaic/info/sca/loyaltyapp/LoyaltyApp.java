@@ -31,9 +31,11 @@ public class LoyaltyApp extends Applet {
 	final static byte UPDATE_PIN = (byte) 0x70;
 
 	// maximum balance
-	final static short MAX_BALANCE = 0x7FFF;
+	final static short MAX_BALANCE = 0x2710; // 10000
 	// maximum transaction amount
-	final static short MAX_TRANSACTION_AMOUNT = 600;
+	final static short MAX_TRANSACTION_AMOUNT = 0x3E8; // 1000
+	// maximum amount of points
+	final static short MAX_POINTS_AMOUNT = 0x12C;
 
 	// maximum number of incorrect tries before the
 	// PIN is blocked
@@ -59,6 +61,7 @@ public class LoyaltyApp extends Applet {
 	OwnerPIN pin;
 	short balance;
 	short tries = 0;
+	short points;
 
 	/**
 	 * Only this class's install method should create the applet object.
@@ -170,17 +173,145 @@ public class LoyaltyApp extends Applet {
 	}
 
 	private void credit(APDU apdu) {
-		// TODO Auto-generated method stub
+		if (!pin.isValidated()) {
+			ISOException.throwIt(SW_PIN_VERIFICATION_REQUIRED);
+		}
+
+		byte[] buffer = apdu.getBuffer();
+		byte numBytes = buffer[ISO7816.OFFSET_LC];
+
+		byte byteRead = (byte) (apdu.setIncomingAndReceive());
+
+		if ((numBytes != 2) || (byteRead != 2)) {
+			ISOException.throwIt(ISO7816.SW_WRONG_LENGTH);
+		}
+
+		byte byte1 = buffer[ISO7816.OFFSET_CDATA];
+		byte byte2 = buffer[ISO7816.OFFSET_CDATA + 1];
+
+		short creditAmount = (short) ((byte1 << 8) + byte2);
+
+		if ((creditAmount > MAX_TRANSACTION_AMOUNT) || (creditAmount < 0)) {
+			ISOException.throwIt(SW_INVALID_TRANSACTION_AMOUNT);
+		}
+		if ((short) (balance + creditAmount) > MAX_BALANCE) {
+			ISOException.throwIt(SW_EXCEED_MAXIMUM_BALANCE);
+		}
+
+		balance = (short) (balance + creditAmount);
 
 	}
 
 	private void debit(APDU apdu) {
+		// access authentication
+		if (!pin.isValidated()) {
+			ISOException.throwIt(SW_PIN_VERIFICATION_REQUIRED);
+		}
+
+		byte[] buffer = apdu.getBuffer();
+		byte numBytes = (buffer[ISO7816.OFFSET_LC]);
+
+		byte byteRead = (byte) (apdu.setIncomingAndReceive());
+
+		// if ((numBytes != 2) || (byteRead != 2)) {
+		// ISOException.throwIt(ISO7816.SW_WRONG_LENGTH);
+		// }
+
+		// get debit amount
+		byte moneyLength = buffer[ISO7816.OFFSET_CDATA];
+		byte i = 0;
+		short moneyAmount = 0;
+		while (i < moneyLength) {
+			moneyAmount = (short) ((moneyAmount << 8) + buffer[(byte)(ISO7816.OFFSET_CDATA + i + 1)]);
+			i++;
+		}
+
+		// get points amount
+		byte pointsLength = buffer[ISO7816.OFFSET_CDATA + i];
+		byte j = 0;
+		short pointsAmount = 0;
+		while (j < pointsLength) {
+			pointsAmount = (short) ((pointsAmount << 8) + buffer[(byte) (ISO7816.OFFSET_CDATA + i + j + 1)]);
+			j++;
+		}
+
+		// check debit amount
+		if ((moneyAmount > MAX_TRANSACTION_AMOUNT) || (moneyAmount < 0)) {
+			ISOException.throwIt(SW_INVALID_TRANSACTION_AMOUNT);
+		}
+
+		// check the new balance
+		if ((short) (balance - moneyAmount) < (short) 0) {
+			ISOException.throwIt(SW_NEGATIVE_BALANCE);
+		}
+
+		// check the new balance
+		if ((short) (points - pointsAmount) < (short) 0) {
+			ISOException.throwIt(SW_NEGATIVE_BALANCE);
+		}
+
+		balance = (short) (balance - moneyAmount);
+		points = (short) (points - pointsAmount);
 		
+		points += (short) (moneyAmount / 10);
 	}
 
 	private void getBalance(APDU apdu) {
-		// TODO Auto-generated method stub
+		byte[] buffer = apdu.getBuffer();
 
+		byte byteRead = (byte) (apdu.setIncomingAndReceive());
+		byte type = buffer[ISO7816.OFFSET_CDATA];
+		short le;
+
+		switch (type) {
+		case 0:
+			le = apdu.setOutgoing();
+
+			if (le < 2) {
+				ISOException.throwIt(ISO7816.SW_WRONG_LENGTH);
+			}
+
+			apdu.setOutgoingLength((byte) 2);
+
+			buffer[0] = (byte) (balance >> 8);
+			buffer[1] = (byte) (balance & 0xFF);
+
+			apdu.sendBytes((short) 0, (short) 2);
+			break;
+		case 1:
+			le = apdu.setOutgoing();
+
+			if (le < 2) {
+				ISOException.throwIt(ISO7816.SW_WRONG_LENGTH);
+			}
+
+			apdu.setOutgoingLength((byte) 2);
+
+			buffer[0] = (byte) (points >> 8);
+			buffer[1] = (byte) (points & 0xFF);
+
+			apdu.sendBytes((short) 0, (short) 2);
+			break;
+		case 2:
+			le = apdu.setOutgoing();
+
+			if (le < 2) {
+				ISOException.throwIt(ISO7816.SW_WRONG_LENGTH);
+			}
+
+			apdu.setOutgoingLength((byte) 4);
+
+			buffer[0] = (byte) (balance >> 8);
+			buffer[1] = (byte) (balance & 0xFF);
+
+			buffer[2] = (byte) (points >> 8);
+			buffer[3] = (byte) (points & 0xFF);
+
+			apdu.sendBytes((short) 0, (short) 4);
+			break;
+		default:
+			ISOException.throwIt(ISO7816.SW_COMMAND_CHAINING_NOT_SUPPORTED);
+		}
 	}
 
 	@Override

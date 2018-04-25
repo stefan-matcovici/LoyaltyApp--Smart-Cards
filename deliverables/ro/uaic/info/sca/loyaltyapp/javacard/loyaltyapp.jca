@@ -1,5 +1,5 @@
 // converted by version  [v3.0.5]
-// on Mon Apr 23 22:29:06 EEST 2018
+// on Wed Apr 25 18:50:30 EEST 2018
 
 .package ro/uaic/info/sca/loyaltyapp {
 	.aid 0x6:0x6:0x6:0x6:0x6:0x1;
@@ -20,9 +20,9 @@
 		// 1
 		instanceFieldRef 0.9 LoyaltyApp/pin;
 		// 2
-		.classRef 0.9;		// javacard/framework/OwnerPIN
+		instanceFieldRef short LoyaltyApp/balance;
 		// 3
-		staticMethodRef 0.9.0(BB)V;		// javacard/framework/OwnerPIN.<init>(BB)V
+		instanceFieldRef short LoyaltyApp/points;
 		// 4
 		staticMethodRef 0.3.0()V;		// javacard/framework/Applet.<init>()V
 		// 5
@@ -62,8 +62,20 @@
 		// 18
 		virtualMethodRef 0.9.1([BSB)Z;		// check([BSB)Z
 		// 19
-		virtualMethodRef 0.9.5()V;		// reset()V
+		virtualMethodRef 0.9.4()Z;		// isValidated()Z
 		// 20
+		.classRef 0.9;		// javacard/framework/OwnerPIN
+		// 21
+		staticMethodRef 0.9.0(BB)V;		// javacard/framework/OwnerPIN.<init>(BB)V
+		// 22
+		virtualMethodRef 0.10.7()S;		// setOutgoing()S
+		// 23
+		virtualMethodRef 0.10.9(S)V;		// setOutgoingLength(S)V
+		// 24
+		virtualMethodRef 0.10.4(SS)V;		// sendBytes(SS)V
+		// 25
+		virtualMethodRef 0.9.5()V;		// reset()V
+		// 26
 		staticMethodRef 1.0.0()V;		// java/lang/Object.<init>()V
 	}
 
@@ -73,14 +85,16 @@
 			 0.9 pin 0;		// Ljavacard/framework/OwnerPIN;
 			 short balance 1;		// S
 			 short tries 2;		// S
+			 short points 3;		// S
 			static final byte Wallet_CLA = -128;		// B
 			static final byte VERIFY = 32;		// B
 			static final byte CREDIT = 48;		// B
 			static final byte DEBIT = 64;		// B
 			static final byte GET_BALANCE = 80;		// B
 			static final byte UPDATE_PIN = 112;		// B
-			static final short MAX_BALANCE = 32767;		// S
-			static final short MAX_TRANSACTION_AMOUNT = 600;		// S
+			static final short MAX_BALANCE = 10000;		// S
+			static final short MAX_TRANSACTION_AMOUNT = 1000;		// S
+			static final short MAX_POINTS_AMOUNT = 300;		// S
 			static final byte PIN_TRY_LIMIT = 3;		// B
 			static final byte MAX_PIN_SIZE = 8;		// B
 			static final short SW_VERIFICATION_FAILED = 25344;		// S
@@ -113,11 +127,11 @@
 					sconst_0;
 					putfield_s_this 0;		// short ro/uaic/info/sca/loyaltyapp/LoyaltyApp.tries
 					aload_0;
-					new 2;		// javacard/framework/OwnerPIN
+					new 20;		// javacard/framework/OwnerPIN
 					dup;
 					sconst_3;
 					bspush 8;
-					invokespecial 3;		// javacard/framework/OwnerPIN.<init>(BB)V
+					invokespecial 21;		// javacard/framework/OwnerPIN.<init>(BB)V
 					putfield_a 1;		// reference ro/uaic/info/sca/loyaltyapp/LoyaltyApp.pin
 					aload_1;
 					sload_2;
@@ -257,30 +271,323 @@
 		}
 
 		.method private credit(Ljavacard/framework/APDU;)V {
-			.stack 0;
-			.locals 0;
+			.stack 3;
+			.locals 6;
 
 			.descriptor	Ljavacard/framework/APDU;	0.10;
 
-				L0:	return;
+				L0:	getfield_a_this 1;		// reference ro/uaic/info/sca/loyaltyapp/LoyaltyApp.pin
+					invokevirtual 19;		// isValidated()Z
+					ifne L2;
+				L1:	sspush 25345;
+					invokestatic 12;		// javacard/framework/ISOException.throwIt(S)V
+				L2:	aload_1;
+					invokevirtual 10;		// getBuffer()[B
+					astore_2;
+				L3:	aload_2;
+					sconst_4;
+					baload;
+					sstore_3;
+				L4:	aload_1;
+					invokevirtual 17;		// setIncomingAndReceive()S
+					s2b;
+					sstore 4;
+				L5:	sload_3;
+					sconst_2;
+					if_scmpne L7;
+				L6:	sload 4;
+					sconst_2;
+					if_scmpeq L8;
+				L7:	sspush 26368;
+					invokestatic 12;		// javacard/framework/ISOException.throwIt(S)V
+				L8:	aload_2;
+					sconst_5;
+					baload;
+					sstore 5;
+				L9:	aload_2;
+					bspush 6;
+					baload;
+					sstore 6;
+				L10:	sload 5;
+					bspush 8;
+					sshl;
+					sload 6;
+					sadd;
+					sstore 7;
+				L11:	sload 7;
+					sspush 1000;
+					if_scmpgt L13;
+				L12:	sload 7;
+					ifge L14;
+				L13:	sspush 27267;
+					invokestatic 12;		// javacard/framework/ISOException.throwIt(S)V
+				L14:	getfield_s_this 2;		// short ro/uaic/info/sca/loyaltyapp/LoyaltyApp.balance
+					sload 7;
+					sadd;
+					sspush 10000;
+					if_scmple L16;
+				L15:	sspush 27268;
+					invokestatic 12;		// javacard/framework/ISOException.throwIt(S)V
+				L16:	aload_0;
+					getfield_s_this 2;		// short ro/uaic/info/sca/loyaltyapp/LoyaltyApp.balance
+					sload 7;
+					sadd;
+					putfield_s 2;		// short ro/uaic/info/sca/loyaltyapp/LoyaltyApp.balance
+					return;
 		}
 
 		.method private debit(Ljavacard/framework/APDU;)V {
-			.stack 0;
-			.locals 0;
+			.stack 4;
+			.locals 9;
 
 			.descriptor	Ljavacard/framework/APDU;	0.10;
 
-				L0:	return;
+				L0:	getfield_a_this 1;		// reference ro/uaic/info/sca/loyaltyapp/LoyaltyApp.pin
+					invokevirtual 19;		// isValidated()Z
+					ifne L2;
+				L1:	sspush 25345;
+					invokestatic 12;		// javacard/framework/ISOException.throwIt(S)V
+				L2:	aload_1;
+					invokevirtual 10;		// getBuffer()[B
+					astore_2;
+				L3:	aload_2;
+					sconst_4;
+					baload;
+					sstore_3;
+				L4:	aload_1;
+					invokevirtual 17;		// setIncomingAndReceive()S
+					s2b;
+					sstore 4;
+				L5:	aload_2;
+					sconst_5;
+					baload;
+					sstore 5;
+				L6:	sconst_0;
+					sstore 6;
+				L7:	sconst_0;
+					sstore 7;
+				L8:	goto L10;
+				L9:	sload 7;
+					bspush 8;
+					sshl;
+					aload_2;
+					sconst_5;
+					sload 6;
+					sadd;
+					sconst_1;
+					sadd;
+					s2b;
+					baload;
+					sadd;
+					sstore 7;
+					sload 6;
+					sconst_1;
+					sadd;
+					s2b;
+					sstore 6;
+				L10:	sload 6;
+					sload 5;
+					if_scmplt L9;
+				L11:	aload_2;
+					sconst_5;
+					sload 6;
+					sadd;
+					baload;
+					sstore 8;
+				L12:	sconst_0;
+					sstore 9;
+				L13:	sconst_0;
+					sstore 10;
+				L14:	goto L16;
+				L15:	sload 10;
+					bspush 8;
+					sshl;
+					aload_2;
+					sconst_5;
+					sload 6;
+					sadd;
+					sload 9;
+					sadd;
+					sconst_1;
+					sadd;
+					s2b;
+					baload;
+					sadd;
+					sstore 10;
+					sload 9;
+					sconst_1;
+					sadd;
+					s2b;
+					sstore 9;
+				L16:	sload 9;
+					sload 8;
+					if_scmplt L15;
+				L17:	sload 7;
+					sspush 1000;
+					if_scmpgt L19;
+				L18:	sload 7;
+					ifge L20;
+				L19:	sspush 27267;
+					invokestatic 12;		// javacard/framework/ISOException.throwIt(S)V
+				L20:	getfield_s_this 2;		// short ro/uaic/info/sca/loyaltyapp/LoyaltyApp.balance
+					sload 7;
+					ssub;
+					ifge L22;
+				L21:	sspush 27269;
+					invokestatic 12;		// javacard/framework/ISOException.throwIt(S)V
+				L22:	getfield_s_this 3;		// short ro/uaic/info/sca/loyaltyapp/LoyaltyApp.points
+					sload 10;
+					ssub;
+					ifge L24;
+				L23:	sspush 27269;
+					invokestatic 12;		// javacard/framework/ISOException.throwIt(S)V
+				L24:	aload_0;
+					getfield_s_this 2;		// short ro/uaic/info/sca/loyaltyapp/LoyaltyApp.balance
+					sload 7;
+					ssub;
+					putfield_s 2;		// short ro/uaic/info/sca/loyaltyapp/LoyaltyApp.balance
+					aload_0;
+					getfield_s_this 3;		// short ro/uaic/info/sca/loyaltyapp/LoyaltyApp.points
+					sload 10;
+					ssub;
+					putfield_s 3;		// short ro/uaic/info/sca/loyaltyapp/LoyaltyApp.points
+					aload_0;
+					dup;
+					getfield_s 3;		// short ro/uaic/info/sca/loyaltyapp/LoyaltyApp.points
+					sload 7;
+					bspush 10;
+					sdiv;
+					sadd;
+					putfield_s 3;		// short ro/uaic/info/sca/loyaltyapp/LoyaltyApp.points
+					return;
 		}
 
 		.method private getBalance(Ljavacard/framework/APDU;)V {
-			.stack 0;
-			.locals 0;
+			.stack 4;
+			.locals 4;
 
 			.descriptor	Ljavacard/framework/APDU;	0.10;
 
-				L0:	return;
+				L0:	aload_1;
+					invokevirtual 10;		// getBuffer()[B
+					astore_2;
+				L1:	aload_1;
+					invokevirtual 17;		// setIncomingAndReceive()S
+					s2b;
+					sstore_3;
+				L2:	aload_2;
+					sconst_5;
+					baload;
+					sstore 4;
+				L3:	sload 4;
+					stableswitch L16 0 2 L4 L8 L12;
+				L4:	aload_1;
+					invokevirtual 22;		// setOutgoing()S
+					sstore 5;
+				L5:	sload 5;
+					sconst_2;
+					if_scmpge L7;
+				L6:	sspush 26368;
+					invokestatic 12;		// javacard/framework/ISOException.throwIt(S)V
+				L7:	aload_1;
+					sconst_2;
+					invokevirtual 23;		// setOutgoingLength(S)V
+					aload_2;
+					sconst_0;
+					getfield_s_this 2;		// short ro/uaic/info/sca/loyaltyapp/LoyaltyApp.balance
+					bspush 8;
+					sshr;
+					s2b;
+					bastore;
+					aload_2;
+					sconst_1;
+					getfield_s_this 2;		// short ro/uaic/info/sca/loyaltyapp/LoyaltyApp.balance
+					sspush 255;
+					sand;
+					s2b;
+					bastore;
+					aload_1;
+					sconst_0;
+					sconst_2;
+					invokevirtual 24;		// sendBytes(SS)V
+					goto_w L17;
+				L8:	aload_1;
+					invokevirtual 22;		// setOutgoing()S
+					sstore 5;
+				L9:	sload 5;
+					sconst_2;
+					if_scmpge L11;
+				L10:	sspush 26368;
+					invokestatic 12;		// javacard/framework/ISOException.throwIt(S)V
+				L11:	aload_1;
+					sconst_2;
+					invokevirtual 23;		// setOutgoingLength(S)V
+					aload_2;
+					sconst_0;
+					getfield_s_this 3;		// short ro/uaic/info/sca/loyaltyapp/LoyaltyApp.points
+					bspush 8;
+					sshr;
+					s2b;
+					bastore;
+					aload_2;
+					sconst_1;
+					getfield_s_this 3;		// short ro/uaic/info/sca/loyaltyapp/LoyaltyApp.points
+					sspush 255;
+					sand;
+					s2b;
+					bastore;
+					aload_1;
+					sconst_0;
+					sconst_2;
+					invokevirtual 24;		// sendBytes(SS)V
+					goto L17;
+				L12:	aload_1;
+					invokevirtual 22;		// setOutgoing()S
+					sstore 5;
+				L13:	sload 5;
+					sconst_2;
+					if_scmpge L15;
+				L14:	sspush 26368;
+					invokestatic 12;		// javacard/framework/ISOException.throwIt(S)V
+				L15:	aload_1;
+					sconst_4;
+					invokevirtual 23;		// setOutgoingLength(S)V
+					aload_2;
+					sconst_0;
+					getfield_s_this 2;		// short ro/uaic/info/sca/loyaltyapp/LoyaltyApp.balance
+					bspush 8;
+					sshr;
+					s2b;
+					bastore;
+					aload_2;
+					sconst_1;
+					getfield_s_this 2;		// short ro/uaic/info/sca/loyaltyapp/LoyaltyApp.balance
+					sspush 255;
+					sand;
+					s2b;
+					bastore;
+					aload_2;
+					sconst_2;
+					getfield_s_this 3;		// short ro/uaic/info/sca/loyaltyapp/LoyaltyApp.points
+					bspush 8;
+					sshr;
+					s2b;
+					bastore;
+					aload_2;
+					sconst_3;
+					getfield_s_this 3;		// short ro/uaic/info/sca/loyaltyapp/LoyaltyApp.points
+					sspush 255;
+					sand;
+					s2b;
+					bastore;
+					aload_1;
+					sconst_0;
+					sconst_4;
+					invokevirtual 24;		// sendBytes(SS)V
+					goto L17;
+				L16:	sspush 26756;
+					invokestatic 12;		// javacard/framework/ISOException.throwIt(S)V
+				L17:	return;
 		}
 
 		.method public deselect()V 4 {
@@ -288,7 +595,7 @@
 			.locals 0;
 
 				L0:	getfield_a_this 1;		// reference ro/uaic/info/sca/loyaltyapp/LoyaltyApp.pin
-					invokevirtual 19;		// reset()V
+					invokevirtual 25;		// reset()V
 					return;
 		}
 
@@ -313,7 +620,7 @@
 			.locals 0;
 
 				L0:	aload_0;
-					invokespecial 20;		// java/lang/Object.<init>()V
+					invokespecial 26;		// java/lang/Object.<init>()V
 					return;
 		}
 
