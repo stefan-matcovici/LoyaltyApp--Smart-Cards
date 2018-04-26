@@ -1,5 +1,5 @@
 // converted by version  [v3.0.5]
-// on Wed Apr 25 18:50:30 EEST 2018
+// on Thu Apr 26 18:09:35 EEST 2018
 
 .package ro/uaic/info/sca/loyaltyapp {
 	.aid 0x6:0x6:0x6:0x6:0x6:0x1;
@@ -312,7 +312,9 @@
 					bspush 8;
 					sshl;
 					sload 6;
-					sadd;
+					sspush 255;
+					sand;
+					sor;
 					sstore 7;
 				L11:	sload 7;
 					sspush 1000;
@@ -337,7 +339,7 @@
 		}
 
 		.method private debit(Ljavacard/framework/APDU;)V {
-			.stack 4;
+			.stack 6;
 			.locals 9;
 
 			.descriptor	Ljavacard/framework/APDU;	0.10;
@@ -378,7 +380,9 @@
 					sadd;
 					s2b;
 					baload;
-					sadd;
+					sspush 255;
+					sand;
+					sor;
 					sstore 7;
 					sload 6;
 					sconst_1;
@@ -388,7 +392,12 @@
 				L10:	sload 6;
 					sload 5;
 					if_scmplt L9;
-				L11:	aload_2;
+				L11:	sload 6;
+					sconst_1;
+					sadd;
+					s2b;
+					sstore 6;
+					aload_2;
 					sconst_5;
 					sload 6;
 					sadd;
@@ -412,7 +421,9 @@
 					sadd;
 					s2b;
 					baload;
-					sadd;
+					sspush 255;
+					sand;
+					sor;
 					sstore 10;
 					sload 9;
 					sconst_1;
@@ -455,11 +466,20 @@
 					dup;
 					getfield_s 3;		// short ro/uaic/info/sca/loyaltyapp/LoyaltyApp.points
 					sload 7;
-					bspush 10;
-					sdiv;
+					s2i;
+					bipush 10;
+					idiv;
+					sipush 300;
+					irem;
+					i2s;
 					sadd;
 					putfield_s 3;		// short ro/uaic/info/sca/loyaltyapp/LoyaltyApp.points
-					return;
+					getfield_s_this 3;		// short ro/uaic/info/sca/loyaltyapp/LoyaltyApp.points
+					sspush 300;
+					if_scmple L26;
+				L25:	sspush 300;
+					putfield_s_this 3;		// short ro/uaic/info/sca/loyaltyapp/LoyaltyApp.points
+				L26:	return;
 		}
 
 		.method private getBalance(Ljavacard/framework/APDU;)V {

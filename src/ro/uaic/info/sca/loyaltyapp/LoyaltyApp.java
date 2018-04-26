@@ -188,8 +188,9 @@ public class LoyaltyApp extends Applet {
 
 		byte byte1 = buffer[ISO7816.OFFSET_CDATA];
 		byte byte2 = buffer[ISO7816.OFFSET_CDATA + 1];
+		
 
-		short creditAmount = (short) ((byte1 << 8) + byte2);
+		short creditAmount = (short) ((byte1 << 8) | byte2 & 0xFF);
 
 		if ((creditAmount > MAX_TRANSACTION_AMOUNT) || (creditAmount < 0)) {
 			ISOException.throwIt(SW_INVALID_TRANSACTION_AMOUNT);
@@ -199,7 +200,6 @@ public class LoyaltyApp extends Applet {
 		}
 
 		balance = (short) (balance + creditAmount);
-
 	}
 
 	private void debit(APDU apdu) {
@@ -222,16 +222,18 @@ public class LoyaltyApp extends Applet {
 		byte i = 0;
 		short moneyAmount = 0;
 		while (i < moneyLength) {
-			moneyAmount = (short) ((moneyAmount << 8) + buffer[(byte)(ISO7816.OFFSET_CDATA + i + 1)]);
+			moneyAmount = (short) ((moneyAmount << 8) | buffer[(byte)(ISO7816.OFFSET_CDATA + i + 1)] & 0xFF);
 			i++;
 		}
+			
+		i++;
 
 		// get points amount
 		byte pointsLength = buffer[ISO7816.OFFSET_CDATA + i];
 		byte j = 0;
 		short pointsAmount = 0;
 		while (j < pointsLength) {
-			pointsAmount = (short) ((pointsAmount << 8) + buffer[(byte) (ISO7816.OFFSET_CDATA + i + j + 1)]);
+			pointsAmount = (short) ((pointsAmount << 8) | buffer[(byte) (ISO7816.OFFSET_CDATA + i + j + 1)] & 0xFF);
 			j++;
 		}
 
@@ -253,7 +255,9 @@ public class LoyaltyApp extends Applet {
 		balance = (short) (balance - moneyAmount);
 		points = (short) (points - pointsAmount);
 		
-		points += (short) (moneyAmount / 10);
+		points += (short) ((moneyAmount / 10) % MAX_POINTS_AMOUNT);
+		if (points > MAX_POINTS_AMOUNT)
+			points = MAX_POINTS_AMOUNT;
 	}
 
 	private void getBalance(APDU apdu) {
