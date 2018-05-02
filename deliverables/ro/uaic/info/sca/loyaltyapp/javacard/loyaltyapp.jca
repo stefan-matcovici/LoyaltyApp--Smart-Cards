@@ -1,5 +1,5 @@
 // converted by version  [v3.0.5]
-// on Thu Apr 26 18:09:35 EEST 2018
+// on Wed May 02 10:07:52 EEST 2018
 
 .package ro/uaic/info/sca/loyaltyapp {
 	.aid 0x6:0x6:0x6:0x6:0x6:0x1;
@@ -339,7 +339,7 @@
 		}
 
 		.method private debit(Ljavacard/framework/APDU;)V {
-			.stack 6;
+			.stack 4;
 			.locals 9;
 
 			.descriptor	Ljavacard/framework/APDU;	0.10;
@@ -466,12 +466,8 @@
 					dup;
 					getfield_s 3;		// short ro/uaic/info/sca/loyaltyapp/LoyaltyApp.points
 					sload 7;
-					s2i;
-					bipush 10;
-					idiv;
-					sipush 300;
-					irem;
-					i2s;
+					bspush 10;
+					sdiv;
 					sadd;
 					putfield_s 3;		// short ro/uaic/info/sca/loyaltyapp/LoyaltyApp.points
 					getfield_s_this 3;		// short ro/uaic/info/sca/loyaltyapp/LoyaltyApp.points
@@ -488,28 +484,33 @@
 
 			.descriptor	Ljavacard/framework/APDU;	0.10;
 
-				L0:	aload_1;
+				L0:	getfield_a_this 1;		// reference ro/uaic/info/sca/loyaltyapp/LoyaltyApp.pin
+					invokevirtual 19;		// isValidated()Z
+					ifne L2;
+				L1:	sspush 25345;
+					invokestatic 12;		// javacard/framework/ISOException.throwIt(S)V
+				L2:	aload_1;
 					invokevirtual 10;		// getBuffer()[B
 					astore_2;
-				L1:	aload_1;
+				L3:	aload_1;
 					invokevirtual 17;		// setIncomingAndReceive()S
 					s2b;
 					sstore_3;
-				L2:	aload_2;
+				L4:	aload_2;
 					sconst_5;
 					baload;
 					sstore 4;
-				L3:	sload 4;
-					stableswitch L16 0 2 L4 L8 L12;
-				L4:	aload_1;
+				L5:	sload 4;
+					stableswitch L18 0 2 L6 L10 L14;
+				L6:	aload_1;
 					invokevirtual 22;		// setOutgoing()S
 					sstore 5;
-				L5:	sload 5;
+				L7:	sload 5;
 					sconst_2;
-					if_scmpge L7;
-				L6:	sspush 26368;
+					if_scmpge L9;
+				L8:	sspush 26368;
 					invokestatic 12;		// javacard/framework/ISOException.throwIt(S)V
-				L7:	aload_1;
+				L9:	aload_1;
 					sconst_2;
 					invokevirtual 23;		// setOutgoingLength(S)V
 					aload_2;
@@ -530,16 +531,16 @@
 					sconst_0;
 					sconst_2;
 					invokevirtual 24;		// sendBytes(SS)V
-					goto_w L17;
-				L8:	aload_1;
+					goto_w L19;
+				L10:	aload_1;
 					invokevirtual 22;		// setOutgoing()S
 					sstore 5;
-				L9:	sload 5;
+				L11:	sload 5;
 					sconst_2;
-					if_scmpge L11;
-				L10:	sspush 26368;
+					if_scmpge L13;
+				L12:	sspush 26368;
 					invokestatic 12;		// javacard/framework/ISOException.throwIt(S)V
-				L11:	aload_1;
+				L13:	aload_1;
 					sconst_2;
 					invokevirtual 23;		// setOutgoingLength(S)V
 					aload_2;
@@ -560,16 +561,16 @@
 					sconst_0;
 					sconst_2;
 					invokevirtual 24;		// sendBytes(SS)V
-					goto L17;
-				L12:	aload_1;
+					goto L19;
+				L14:	aload_1;
 					invokevirtual 22;		// setOutgoing()S
 					sstore 5;
-				L13:	sload 5;
+				L15:	sload 5;
 					sconst_2;
-					if_scmpge L15;
-				L14:	sspush 26368;
+					if_scmpge L17;
+				L16:	sspush 26368;
 					invokestatic 12;		// javacard/framework/ISOException.throwIt(S)V
-				L15:	aload_1;
+				L17:	aload_1;
 					sconst_4;
 					invokevirtual 23;		// setOutgoingLength(S)V
 					aload_2;
@@ -604,10 +605,10 @@
 					sconst_0;
 					sconst_4;
 					invokevirtual 24;		// sendBytes(SS)V
-					goto L17;
-				L16:	sspush 26756;
+					goto L19;
+				L18:	sspush 26756;
 					invokestatic 12;		// javacard/framework/ISOException.throwIt(S)V
-				L17:	return;
+				L19:	return;
 		}
 
 		.method public deselect()V 4 {

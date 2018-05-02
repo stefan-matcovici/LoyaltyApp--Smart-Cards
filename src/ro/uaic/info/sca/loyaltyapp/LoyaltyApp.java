@@ -188,7 +188,6 @@ public class LoyaltyApp extends Applet {
 
 		byte byte1 = buffer[ISO7816.OFFSET_CDATA];
 		byte byte2 = buffer[ISO7816.OFFSET_CDATA + 1];
-		
 
 		short creditAmount = (short) ((byte1 << 8) | byte2 & 0xFF);
 
@@ -222,10 +221,10 @@ public class LoyaltyApp extends Applet {
 		byte i = 0;
 		short moneyAmount = 0;
 		while (i < moneyLength) {
-			moneyAmount = (short) ((moneyAmount << 8) | buffer[(byte)(ISO7816.OFFSET_CDATA + i + 1)] & 0xFF);
+			moneyAmount = (short) ((moneyAmount << 8) | buffer[(byte) (ISO7816.OFFSET_CDATA + i + 1)] & 0xFF);
 			i++;
 		}
-			
+
 		i++;
 
 		// get points amount
@@ -254,13 +253,18 @@ public class LoyaltyApp extends Applet {
 
 		balance = (short) (balance - moneyAmount);
 		points = (short) (points - pointsAmount);
-		
-		points += (short) ((moneyAmount / 10) % MAX_POINTS_AMOUNT);
+
+		points += (short) ((moneyAmount / 10));
 		if (points > MAX_POINTS_AMOUNT)
 			points = MAX_POINTS_AMOUNT;
 	}
 
 	private void getBalance(APDU apdu) {
+		// access authentication
+		if (!pin.isValidated()) {
+			ISOException.throwIt(SW_PIN_VERIFICATION_REQUIRED);
+		}
+
 		byte[] buffer = apdu.getBuffer();
 
 		byte byteRead = (byte) (apdu.setIncomingAndReceive());
